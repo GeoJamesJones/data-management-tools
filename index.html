@@ -19,6 +19,12 @@
       input{
           padding-top: 6px !important;
       }
+      .esri-coordinate-conversion__heading {
+        background-color: #9f9f9f;
+      }
+      div.esri-coordinate-conversion__display:hover {
+        background-color: #808080
+      }
     </style>
 
   </head>
@@ -556,6 +562,7 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/views/SceneView",
+        "esri/widgets/CoordinateConversion",
         "esri/widgets/Search",
         "esri/widgets/BasemapGallery",
         "esri/core/watchUtils",
@@ -569,6 +576,7 @@
         Map,
         MapView,
         SceneView,
+        CoordinateConversion,
         Search,
         Basemaps,
         watchUtils,
@@ -630,7 +638,7 @@
         setActiveView(app.mapView);
 
         // Create the search widget and add it to the navbar instead of view
-        app.searchWidget = new Search(
+        app.searchWidget = new CoordinateConversion(
           {
             view: app.activeView
           },
