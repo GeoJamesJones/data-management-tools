@@ -79,10 +79,10 @@
       </div>
       <!-- Title -->
       <div class="calcite-title calcite-overflow-hidden">
-        <span class="calcite-title-main">Data Management Tools</span>
+        <span class="calcite-title-main">Mission Command Map Prep</span>
         <span class="calcite-title-divider hidden-xs"></span>
         <span class="calcite-title-sub hidden-xs"
-          >Created by James Jones and Max Ozenberger</span
+          >Data Management Tools</span
         >
       </div>
       <!-- Nav -->
@@ -644,6 +644,19 @@
           },
           "searchWidgetDiv"
         );
+
+        app.searchWidget.goToOverride = function(view, goToParams){
+          goToParams.target = {
+            target: target,
+            zoom: 15
+          };
+          goToParams.options = {
+            animate: true,
+            duration: 1000,
+            easing: "ease"
+          };
+          return view.goTo(goToParams.target, goToParams.options);
+        }
 
         CalciteMapsArcGIS.setSearchExpandEvents(app.searchWidget);
 
