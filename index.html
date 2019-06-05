@@ -646,6 +646,7 @@
         );
 
         app.searchWidget.goToOverride = function(view, goToParams){
+          var target = goToParams.target;
           goToParams.target = {
             target: target,
             zoom: 15
