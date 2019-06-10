@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="./arcgis_js_api/library/4.11/dojo/Calcite-Maps/dist/css/calcite-maps-arcgis-4.x.min-v0.8.css" />
     <link rel="stylesheet" href="./arcgis_js_api/library/4.11/esri/themes/light/main.css" />
 
+    <script src="./jQuery-3.4.1.min.js"></script>
+
     <style>
       html,
       body {
@@ -185,7 +187,7 @@
                         <input type="file" class="form-control" id="outDirectoryShape" placeholder="Please select an output directory" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
                     </div>
                 </div>
-                <button type="submit" class="btn-primary">Submit</button>
+                <button type="submit" class="btn-primary" id="shapeSubmit">Submit</button>
               </div>
             </div>
           </div>
@@ -255,7 +257,7 @@
                                 <input type="file" class="form-control" id="cacheLocationRas" placeholder="Please select a temporary cache location" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
                             </div>
                         </div>
-                    <button type="submit" class="btn-primary">Submit</button>
+                    <button type="submit" class="btn-primary" id="rasterSubmit">Submit</button>
                   </div>
                 </div>
               </div>
@@ -319,7 +321,7 @@
                             <input type="file" class="form-control" id="cacheLocationEle" placeholder="Please select a temporary cache location" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
                         </div>
                     </div>
-                <button type="submit" class="btn-primary">Submit</button>
+                <button type="submit" class="btn-primary" id="elevationSubmit">Submit</button>
               </div>
             </div>
           </div>
@@ -571,6 +573,7 @@
         "bootstrap/Collapse",
         "bootstrap/Dropdown",
         "bootstrap/Tab",
+        "dojox/widget/Standby",
         "@dojo/framework/shim/array"
       ], function(
         Map,
@@ -581,7 +584,8 @@
         Basemaps,
         watchUtils,
         CalciteMaps,
-        CalciteMapsArcGIS
+        CalciteMapsArcGIS,
+
       ) {
 
         app = {
@@ -874,7 +878,82 @@
             app.activeView.popup.visible = true;
           }
         }
+
+        $("#shapeSubmit").click(function(){
+          var inDir = $("#inDirectoryShape").val();
+          var outDir = $("#outDirectoryShape").val();
+          var json = {
+            "in-directory": inDir,
+            "out-directory": outDir,
+            "create-new-service": "true"
+          }
+          $.ajax({
+            type: "POST",
+            url: "ENTER URL HERE",
+            data: json,
+            beforeSend: function(){
+              $("#basicStandby").show();
+            }
+          }).done(function(data){
+            $("#basicStandby").hide();
+            //load boundary to map
+          })
+        })
+
+        $("#rasterSubmit").click(function(){
+          var inDir = $("#workspaceRaster").val();
+          var outDir = $("#outDirectoryShape").val();
+          var mosaicData = $("#mosaicDatasetRas").val();
+          var rasterType = $("#rasterType").val();
+          var cache = $("#cacheLocationRas").val();
+          var json = {
+            "workspace": inDir,
+            "out-directory": outDir,
+            "mosaic-dataset": mosaicData,
+            "raster-type": rasterType,
+            "cache-location": cache,
+            "create-new-service": "true"
+          }
+          $.ajax({
+            type: "POST",
+            url: "ENTER URL HERE",
+            data: json,
+            beforeSend: function(){
+              $("#basicStandby").show();
+            }
+          }).done(function(data){
+            $("#basicStandby").hide();
+            //load boundary to map
+          })
+        })
+
+        $("#elevationSubmit").click(function(){
+          var inDir = $("#workspaceElevation").val();
+          var outDir = $("#outDirectoryElevation").val();
+          var mosaicData = $("#mosaicDatasetEle").val();
+          var cache = $("#cacheLocationEle").val();
+          var json = {
+            "workspace": inDir,
+            "out-directory": outDir,
+            "mosaic-dataset": mosaicData,
+            "cache-location": cache,
+            "create-new-service": "true"
+          }
+          $.ajax({
+            type: "POST",
+            url: "ENTER URL HERE",
+            data: json,
+            beforeSend: function(){
+              $("#basicStandby").show();
+            }
+          }).done(function(data){
+            $("#basicStandby").hide();
+            //load boundary to map
+          })
+        })
+        
       });
     </script>
+    <div id="basicStandby" data-dojo-type="dojox.widget.Standby" data-dojo-props="target:'basic'"></div>
   </body>
 </html>
