@@ -62,11 +62,11 @@
                 <span class="glyphicon glyphicon-wrench"></span> Consolidate Elevation
             </a>
           </li>
-          <li>
+          <!--<li>
             <a role="button" data-target="#panelBasemaps" aria-haspopup="true">
                 <span class="glyphicon glyphicon-th-large"></span> Basemaps
             </a>
-          </li>
+          </li>-->
           <li>
             <a role="button" data-target="#panelSettings" aria-haspopup="true">
                 <span class="glyphicon glyphicon-cog"></span> Settings
@@ -181,12 +181,6 @@
                         <input type="file" class="form-control" id="inDirectoryShape" placeholder="Please select an input directory" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="outDirectoryShape" class="col-xs-4 control-label">Out Directory:</label>
-                    <div class="col-xs-8">
-                        <input type="file" class="form-control" id="outDirectoryShape" placeholder="Please select an output directory" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
-                    </div>
-                </div>
                 <button type="submit" class="btn-primary" id="shapeSubmit">Submit</button>
               </div>
             </div>
@@ -234,27 +228,13 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="outDirectoryRaster" class="col-xs-4 control-label">Out Directory:</label>
-                            <div class="col-xs-8">
-                                <input type="file" class="form-control" id="outDirectoryRaster" placeholder="Please select an output directory" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="mosaicDatasetRas" class="col-xs-4 control-label">Mosaic Dataset:</label>
-                            <div class="col-xs-8">
-                                <input type="file" class="form-control" id="mosaicDatasetRas" placeholder="Please select a mosaic dataset" />
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <label for="rasterType" class="col-xs-4 control-label">Raster Type:</label>
                             <div class="col-xs-8">
-                                <input type="text" class="form-control" id="rasterType" placeholder="Please enter a raster type" value="Raster Dataset" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="cacheLocationRas" class="col-xs-4 control-label">Cache Location:</label>
-                            <div class="col-xs-8">
-                                <input type="file" class="form-control" id="cacheLocationRas" placeholder="Please select a temporary cache location" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+								<select class="form-control" id="rasterType" placeholder="Please select a raster type">
+									<option>CADRG/ECRG</option>
+									<option>CIB</option>
+									<option>Raster Dataset (Generic Raster)</option>
+								</select>
                             </div>
                         </div>
                     <button type="submit" class="btn-primary" id="rasterSubmit">Submit</button>
@@ -301,24 +281,6 @@
                         <label for="workspaceElevation" class="col-xs-4 control-label">Workspace:</label>
                         <div class="col-xs-8">
                             <input type="file" class="form-control" id="workspaceElevation" placeholder="Please select a workspace" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="outDirectoryElevation" class="col-xs-4 control-label">Out Directory:</label>
-                        <div class="col-xs-8">
-                            <input type="file" class="form-control" id="outDirectoryElevation" placeholder="Please select an output directory" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mosaicDatasetEle" class="col-xs-4 control-label">Mosaic Dataset:</label>
-                        <div class="col-xs-8">
-                            <input type="file" class="form-control" id="mosaicDatasetEle" placeholder="Please select a mosaic dataset" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="cacheLocationEle" class="col-xs-4 control-label">Cache Location:</label>
-                        <div class="col-xs-8">
-                            <input type="file" class="form-control" id="cacheLocationEle" placeholder="Please select a temporary cache location" onchange="getfolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
                         </div>
                     </div>
                 <button type="submit" class="btn-primary" id="elevationSubmit">Submit</button>
@@ -564,6 +526,7 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/views/SceneView",
+		"esri/layers/MapImageLayer",
         "esri/widgets/CoordinateConversion",
         "esri/widgets/Search",
         "esri/widgets/BasemapGallery",
@@ -579,6 +542,7 @@
         Map,
         MapView,
         SceneView,
+		MapImageLayer,
         CoordinateConversion,
         Search,
         Basemaps,
@@ -606,9 +570,11 @@
         };
 
         // Map
-        const map = new Map({
-          basemap: app.basemap
-        });
+        const map = new Map();
+
+		const baseUrl = "https://localhost:6443/arcgis/rest/services/SampleWorldCities/MapServer/"
+		const layer = new MapImageLayer(baseUrl, null);
+		map.layers.add(layer);
 
         // 2D view
         app.mapView = new MapView({
@@ -666,10 +632,10 @@
         CalciteMapsArcGIS.setSearchExpandEvents(app.searchWidget);
 
         // Create basemap widget
-        app.basemapWidget = new Basemaps({
+        /*app.basemapWidget = new Basemaps({
           view: app.activeView,
           container: "basemapPanelDiv"
-        });
+        });*/
 
         //Synchronize the view, search and popup
 
@@ -881,79 +847,70 @@
 
         $("#shapeSubmit").click(function(){
           var inDir = $("#inDirectoryShape").val();
-          var outDir = $("#outDirectoryShape").val();
           var json = {
             "in-directory": inDir,
-            "out-directory": outDir,
             "create-new-service": "true"
           }
-          $.ajax({
+		  $.post("http://localhost:5000/api/v1.0/upload-shapes", json)
+		  .done(function(data){
+			console.log("done");
+		  });
+          /*$.ajax({
             type: "POST",
-            url: "ENTER URL HERE",
-            data: json,
-            beforeSend: function(){
-              $("#basicStandby").show();
-            }
+			dataType: "json",
+            url: "http://localhost:5000/api/v1.0/upload-shapes",
+            data: json
           }).done(function(data){
-            $("#basicStandby").hide();
             //load boundary to map
-          })
+			console.log("done");
+          })*/
         })
 
         $("#rasterSubmit").click(function(){
           var inDir = $("#workspaceRaster").val();
-          var outDir = $("#outDirectoryShape").val();
-          var mosaicData = $("#mosaicDatasetRas").val();
           var rasterType = $("#rasterType").val();
-          var cache = $("#cacheLocationRas").val();
           var json = {
             "workspace": inDir,
-            "out-directory": outDir,
-            "mosaic-dataset": mosaicData,
             "raster-type": rasterType,
-            "cache-location": cache,
             "create-new-service": "true"
           }
           $.ajax({
             type: "POST",
-            url: "ENTER URL HERE",
-            data: json,
-            beforeSend: function(){
-              $("#basicStandby").show();
-            }
+			dataType: "json",
+            url: "http://localhost:5000/api/v1.0/upload-raster",
+            data: json
           }).done(function(data){
-            $("#basicStandby").hide();
+			console.log("done");
             //load boundary to map
           })
         })
 
         $("#elevationSubmit").click(function(){
           var inDir = $("#workspaceElevation").val();
-          var outDir = $("#outDirectoryElevation").val();
-          var mosaicData = $("#mosaicDatasetEle").val();
-          var cache = $("#cacheLocationEle").val();
           var json = {
             "workspace": inDir,
-            "out-directory": outDir,
-            "mosaic-dataset": mosaicData,
-            "cache-location": cache,
             "create-new-service": "true"
           }
           $.ajax({
             type: "POST",
-            url: "ENTER URL HERE",
-            data: json,
-            beforeSend: function(){
-              $("#basicStandby").show();
-            }
+			dataType: "json",
+            url: "http://localhost:5000/api/v1.0/upload-elevation",
+            data: json
           }).done(function(data){
-            $("#basicStandby").hide();
             //load boundary to map
+			console.log("done");
           })
         })
-        
+		$("#basicStandby").hide();
+        $(document).ajaxStart(function(){
+			$(".esri-ui-inner-container esri-ui-manual-container").fadeTo("fast", 0.5);
+			$("#basicStandby").show();
+		}).ajaxStop(function() {
+			$(".esri-ui-inner-container esri-ui-manual-container").fadeIn("fast");
+			$("#basicStandby").hide();
+		});
       });
     </script>
-    <div id="basicStandby" data-dojo-type="dojox.widget.Standby" data-dojo-props="target:'basic'"></div>
+    <div id="basicStandby" style="position:absolute;top:50%;left:50%;"><img src="loading.gif" alt="Loading..." style="height:75px;"/></div>
   </body>
 </html>
